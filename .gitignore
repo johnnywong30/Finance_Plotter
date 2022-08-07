@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Bank statements; insert yours in here and make your own folder if not present
+statements/
+history.txt
+bank.xlsx
+*.Ink
