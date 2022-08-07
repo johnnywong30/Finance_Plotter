@@ -5,10 +5,12 @@ from datetime import datetime
 import calendar
 
 STATEMENTS_DIRECTORY = 'statements/'
+HISTORY_FILE = 'history.txt'
+EXCEL_FILE = 'bank.xlsx'
 
 def read_history():
-    mode = 'r' if os.path.exists('history.txt') else 'w+'
-    f = open('history.txt', mode)
+    mode = 'r' if os.path.exists(HISTORY_FILE) else 'w+'
+    f = open(HISTORY_FILE, mode)
     history = [line.strip() for line in f.readlines()]
     f.close()
     return history
@@ -24,8 +26,7 @@ def process_statement(statement):
     # actually processing
     g = df.groupby('Category').sum().abs()
 
-    excel_file = 'bank.xlsx'
-    with pd.ExcelWriter(excel_file) as writer:
+    with pd.ExcelWriter(EXCEL_FILE) as writer:
         raw_sheet = f'{statement_month}_RAW'
         summary_sheet = f'{statement_month}_SUMMARY'
         
@@ -58,22 +59,27 @@ def read_new_statements():
     return new_statements
 
 def process_statements(statements):
-    f = open('history.txt', 'a')
+    f = open(HISTORY_FILE, 'a')
     for statement in statements:
         process_statement(statement)
         f.write(f'{statement}\n')
     f.close()
     
 def clean_up():
-    f = open('history.txt', 'r')
+    f = open(HISTORY_FILE, 'r')
     f.close()
-    os.remove('history.txt')
-    os.remove('bank.xlsx')
+    os.remove(HISTORY_FILE)
+    os.remove(EXCEL_FILE)
     
 
 def main():
+    print('READING IN NEW STATEMENTS...')
     statements = read_new_statements()
+    count_new = len(statements)
+    print(f'PROCESSING {count_new} STATEMENTS...')
     process_statements(statements)
+    print('FINISHED PROCESSING STATEMENTS...OPENING FILE...')
+    os.startfile(EXCEL_FILE)
     # for test
     # clean_up()
 
